@@ -1,5 +1,5 @@
 -------------------------
---- THE LIBML LICENSE ---
+--- THE RYAN_ML LICENSE ---
 -------------------------
 
 Copyright (c) 2014, Ryan Henning
@@ -15,7 +15,7 @@ modification, are permitted provided that the following conditions are met:
   this list of conditions and the following disclaimer in the documentation
   and/or other materials provided with the distribution.
 
-* Neither the name of libml nor the names of its
+* Neither the name of ryan_ml nor the names of its
   contributors may be used to endorse or promote products derived from
   this software without specific prior written permission.
 
@@ -41,8 +41,8 @@ and their respective licenses are listed below.
 ____
 
 
-Libml uses the Eigen C++ Linear Algebra Library. A copy of the Eigen
-library is located within libml at:
+This library uses the Eigen C++ Linear Algebra Library. A copy of the Eigen
+library is located within repository at:
  - source/ml/eigen-eigen-ffa86ffb5570.tar.gz
  - source/ml/Eigen/...
 
