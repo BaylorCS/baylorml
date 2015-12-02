@@ -26,13 +26,13 @@ int AnnulusKmeansModified::runThread(int threadId, int maxIterations) {
 
     int startNdx = start(threadId);
     int endNdx = end(threadId);
-	
+
     // here we need to calculate s & the centroid-centroid distances before the first iteration
     // the remaining calls to this method are hidden by move_centers
-	update_s(threadId);
+    update_s(threadId);
     synchronizeAllThreads();
 
-    while ((iterations < maxIterations) && ! converged) {
+    while ((iterations < maxIterations) && !converged) {
         ++iterations;
 
         if (threadId == 0) {
@@ -95,9 +95,9 @@ int AnnulusKmeansModified::runThread(int threadId, int maxIterations) {
 
         synchronizeAllThreads();
         move_centers(threadId);
-        
+
         synchronizeAllThreads();
-        if (! converged) {
+        if (!converged) {
             update_bounds(startNdx, endNdx);
         }
 
@@ -110,7 +110,7 @@ int AnnulusKmeansModified::runThread(int threadId, int maxIterations) {
 void AnnulusKmeansModified::initialize(Dataset const *aX, unsigned short aK, unsigned short *initialAssignment, int aNumThreads) {
     HamerlyKmeansModified::initialize(aX, aK, initialAssignment, aNumThreads);
 
-    guard = new unsigned short[n]; 
+    guard = new unsigned short[n];
     xNorm = new double[n];
     cOrder = new std::pair<double, int>[k];
 
