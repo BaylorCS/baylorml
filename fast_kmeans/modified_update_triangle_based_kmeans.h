@@ -36,8 +36,9 @@ public:
 
 	ModifiedUpdateTriangleBasedKmeans() : oldCenters(NULL),
 	lowerBoundUpdate(NULL), maxUpperBound(NULL), maxUpperBoundAgg(NULL),
-	oldCentroidsNorm2(NULL), centroidsNorm2(NULL), 	oldNewCentroidInnerProduct(NULL),
-		centerCenterDistDiv2(NULL),  neighbours(NULL) {}
+	oldCentroidsNorm2(NULL), centroidsNorm2(NULL), oldNewCentroidInnerProduct(NULL),
+	centerCenterDistDiv2(NULL), neighbours(NULL) {
+	}
 
 	virtual ~ModifiedUpdateTriangleBasedKmeans() {
 		free();
@@ -76,19 +77,28 @@ protected:
 	 * the neighbor condition. This is true for Hamerly's algorithm, the heap
 	 * algorithm and the annular algorithm. In the case of Elkan's algorithm
 	 * this method is implemented differently.
-     */
+	 */
 	virtual void calculate_lower_bound_update(int threadId);
 
 	/* Updates the cached inner products. We cache for each centroid its new
 	 * norm, its old norm and also the inner product of the old centroid location
 	 * and the new centroid location.
-     */
+	 */
 	void update_cached_inner_products(int threadId);
 
 	/* Calculates the maximum upper bound by simple iteration over upper
 	 * bound array.
 	 */
 	virtual void calculate_max_upper_bound(int threadId);
+
+	#ifdef USE_THREADS
+	/* This method is used in multithreaded version to collect the maximum upper
+	 * bound from the results that are produced by each thread. Each thread outputs
+	 * the maximum upper bound per cluster for points that it manages into the
+	 * maxUpperBoundAgg array. This method converts the result into maximumUpperBound
+	 * array. All threads must be synchronized before calling this method. */
+	void aggregate_maximum_upper_bound(int threadId);
+	#endif
 
 	/* Comarator of two points by their movement. The points that have moved
 	 * more will be first if the standard order is used.
@@ -102,15 +112,15 @@ protected:
 	 * 
 	 * Parameters:
 	 *  C the center whose update should be calculated
-     *  c the center that moved
-     *  consider_negative Should the calculation consider the negative value.
+	 *  c the center that moved
+	 *  consider_negative Should the calculation consider the negative value.
 	 *       This option should be true for Elkan kmeans. Negative update calculation
 	 *       costs a bit more, but gives tighter update.
-     * Returns: tigher update of the lower bound of points assigned to C if we
+	 * Returns: tigher update of the lower bound of points assigned to C if we
 	 *       consider only centroid c
-     */
+	 */
 	double calculate_update(const unsigned int C, const unsigned int c, bool consider_negative = false);
-	
+
 	/*
 	 * Calculates the neighbors of centroid C and fills the corresponding row
 	 * of the neighbors array. The neighbor array contains for each cluster
@@ -136,7 +146,7 @@ protected:
 
 	/* Array for storing maximum upper bound per cluster. */
 	double *maxUpperBound;
-	
+
 	/* Temporary array used for finding the maximal upper bound using multiple threads. */
 	double *maxUpperBoundAgg;
 
@@ -148,7 +158,7 @@ protected:
 
 	/* Inner product of each centroid's new location with old location. */
 	double *oldNewCentroidInnerProduct;
-	
+
 	/* Keep track of the distance (divided by 2) between each pair of
 	 * points. */
 	double *centerCenterDistDiv2;
@@ -157,7 +167,7 @@ protected:
 	 * more effective calculation of the tighter lower bound update so that we can
 	 * skip some of the points from the iteration. */
 	std::vector<int> centersByMovement;
-	
+
 	/* 
 	 * Here we will store the set of neighbors. It is k array of k arrays, which
 	 * contains the set of neighbors. For each centroid there is list of neighbors,
